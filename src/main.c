@@ -1,4 +1,4 @@
--- Active: 1692399312202@@127.0.0.1@3306
+// -- Active: 1692399312202@@127.0.0.1@3306
 // Author: Nathanael Zuchuon 3GI 2024-2025
 // =======================================
 
@@ -267,55 +267,60 @@ void clickMouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && onButton(0, x, y))
 	{
-		printf("%s", algoUsed);
+	}
 
-		srand(time(NULL));
-		for(int i=0; i<5; i++)
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+	{
+		if (onButton(0, x, y))
 		{
-			processes[i].id = i+1;
-			processes[i].priority = random(1, RAND_MAX);
-			processes[i].arrival_time = random(1, 10);
-			processes[i].burst_time = random(1, 10);
-			processes[i].remaining_time = processes[i].burst_time;
-			processes[i].colour = zuch((double)processes[i].priority);
+			if (algoUsed == "")
+			{
+				popup();
+			}
+			else
+			{
+				srand(time(NULL));
+				for (int i = 0; i < 5; i++)
+				{
+					processes[i].id = i + 1;
+					processes[i].priority = random(1, RAND_MAX);
+					processes[i].arrival_time = random(1, 10);
+					processes[i].burst_time = random(1, 10);
+					processes[i].remaining_time = processes[i].burst_time;
+					processes[i].colour = zuch((double)processes[i].priority);
+				}
+
+				glutMouseFunc(v);
+				// BEGIN ===
+
+				// END =====
+				glutMouseFunc(clickMouse);
+			}
 		}
 
-		if (algoUsed == "")
+		if (onButton(1, x, y))
 		{
-			popup();
+			drawDescZone(fcfs_desc(), 0);
+			algoUsed = "fcfs";
 		}
-		else
+
+		if (onButton(2, x, y))
 		{
-			glutMouseFunc(v);
-			// BEGIN ===
-
-			// END =====
-			glutMouseFunc(clickMouse);
+			drawDescZone(ps_desc(), 1);
+			algoUsed = "ps";
 		}
-	}
 
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && onButton(1, x, y))
-	{
-		drawDescZone(fcfs_desc(), 0);
-		algoUsed = "fcfs";
-	}
+		if (onButton(3, x, y))
+		{
+			drawDescZone(rr_desc(), 2);
+			algoUsed = "rr";
+		}
 
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && onButton(2, x, y))
-	{
-		drawDescZone(ps_desc(), 1);
-		algoUsed = "ps";
-	}
-
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && onButton(3, x, y))
-	{
-		drawDescZone(rr_desc(), 2);
-		algoUsed = "rr";
-	}
-
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && onButton(4, x, y))
-	{
-		drawDescZone(sjf_desc(), 3);
-		algoUsed = "sjf";
+		if (onButton(4, x, y))
+		{
+			drawDescZone(sjf_desc(), 3);
+			algoUsed = "sjf";
+		}
 	}
 }
 
