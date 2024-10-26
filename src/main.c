@@ -1,4 +1,3 @@
-// -- Active: 1692399312202@@127.0.0.1@3306
 // Author: Nathanael Zuchuon 3GI 2024-2025
 // =======================================
 
@@ -8,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <GL/glu.h>
+#include <unistd.h>
 #include <stdbool.h>
 #include <windows.h>
 
@@ -22,19 +22,20 @@
 
 #define FONT GLUT_BITMAP_HELVETICA_18 // font family used
 
+#define NUM_PROCESSES 10 // number of processes
 #define NUM_ALGORITHMS 4 // number of algorithms implemented
 #define ALGO(a, b, c, d) {"FCFS", "PS", "RR", "SJF"} // algorithms
 // ===============================================================
 
-void v(); // ignore the mouse key press
 void start();
 void popup();
 void myInit();
 void closeW(int W);
-float zuch(double x);
 void drawStartButton();
+float zuchuon(double x);
 void draw(int i_colour);
 int random(int min, int max);
+void temporisation(int value);
 void drawRectangle(char *side);
 void drawDescZone(char *desc, int i_colour);
 bool onButton(int indexButton, int x, int y);
@@ -67,11 +68,17 @@ Button buttons[5]; // start->0 • fcfs->1 • ps->2 • rr->3 • sjf->4
 int indexButton = 0;
 
 char *algoUsed = "";
-Process processes[5];
+Process processes[NUM_PROCESSES];
 
 int mainFrame;
 int popupFrame;
-// ===============================================================
+
+bool v = true; // Do not generate processes while `Start` is pressed many times
+
+float *s_y; // start_y
+float *processWidth;
+float *processHeight;
+// ============================================================================
 
 int main(int argc, char *argv[])
 {
@@ -89,9 +96,7 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-// ===============================================================
-
-void v() {}
+// ============================================================================
 
 void pop()
 {
@@ -133,7 +138,7 @@ void myInit()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glClearColor(0.2, 0.2, 0.2, 0.2); // bg-color
+	glClearColor(0.3, 0.3, 0.3, 0.2); // bg-color
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -142,14 +147,14 @@ void closeW(int W)
 	glutDestroyWindow(W);
 }
 
-float zuch(double x)
-{
-	return x / RAND_MAX;
-}
-
 void drawStartButton()
 {
 	drawButton("START !", WIN_WIDTH * 0.5, WIN_HEIGHT * 0.875, -1);
+}
+
+float zuchuon(double x)
+{
+	return x / RAND_MAX;
 }
 
 void draw(int i_colour)
@@ -167,7 +172,21 @@ void draw(int i_colour)
 
 int random(int min, int max)
 {
-	return 1 + rand() % (max + 1);
+	return min + rand() % (max - min + 1);
+}
+
+void temporisation(int value)
+{
+	while (*processWidth < value)
+	{
+		Sleep(5);
+
+		glutSwapBuffers();
+		create(WIN_WIDTH * 0.02, *s_y, *processWidth, *processHeight, "button");
+		glutSwapBuffers();
+
+		*processWidth += 1;
+	}
 }
 
 void drawRectangle(char *side)
@@ -191,7 +210,7 @@ void drawDescZone(char *desc, int i_colour)
 		start();
 		drawAlgorithmButtons(NUM_ALGORITHMS, i_colour);
 
-		glColor3f(0.2, 0.2, 0.2);
+		glColor3f(0.3, 0.3, 0.3);
 		create(WIN_WIDTH * 0.24, WIN_HEIGHT * 0.125, WIN_WIDTH * 0.52, WIN_HEIGHT * 0.125, "button");
 
 		glColor3f(1.0, 1.0, 1.0);
@@ -265,10 +284,6 @@ void create(int x, int y, int w, int h, char *type)
 
 void clickMouse(int button, int state, int x, int y)
 {
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && onButton(0, x, y))
-	{
-	}
-
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
 		if (onButton(0, x, y))
@@ -279,22 +294,45 @@ void clickMouse(int button, int state, int x, int y)
 			}
 			else
 			{
-				srand(time(NULL));
-				for (int i = 0; i < 5; i++)
+				if (v)
 				{
-					processes[i].id = i + 1;
-					processes[i].priority = random(1, RAND_MAX);
-					processes[i].arrival_time = random(1, 10);
-					processes[i].burst_time = random(1, 10);
-					processes[i].remaining_time = processes[i].burst_time;
-					processes[i].colour = zuch((double)processes[i].priority);
+					srand(time(NULL));
+					for (int i = 0; i < NUM_PROCESSES; i++)
+					{
+						processes[i].id = i + 1;
+						processes[i].priority = random(RAND_MAX*0.25, RAND_MAX);
+						processes[i].arrival_time = random(1, 10);
+						processes[i].burst_time = random(1, 10);
+						processes[i].remaining_time = processes[i].burst_time;
+						processes[i].colour = zuchuon((double)processes[i].priority);
+					}
+
+					// BEGIN ===
+					float esp = WIN_HEIGHT * 0.01;
+						
+					processWidth = malloc(sizeof(float));
+					*processWidth = 0.0;
+
+					processHeight = malloc(sizeof(float));
+					*processHeight = ( (WIN_HEIGHT / 2) - ((NUM_PROCESSES + 1) * esp) ) / NUM_PROCESSES;
+
+					s_y = malloc(sizeof(float));
+					*s_y = WIN_HEIGHT * 0.25;
+
+					for (int i = 0; i < NUM_PROCESSES; i++)
+					{
+						*s_y += esp;
+						glColor3f(processes[i].colour, 0.2, 0.2);
+						temporisation((int)(processes[i].burst_time * WIN_WIDTH * 0.021));
+						*s_y += *processHeight;
+
+						*processWidth = 0.0;
+					}
+					free(s_y);
+					free(processHeight);
+					// END =====
+					v = false;
 				}
-
-				glutMouseFunc(v);
-				// BEGIN ===
-
-				// END =====
-				glutMouseFunc(clickMouse);
 			}
 		}
 
