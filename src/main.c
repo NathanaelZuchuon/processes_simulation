@@ -22,7 +22,7 @@
 
 #define FONT GLUT_BITMAP_HELVETICA_18 // font family used
 
-#define NUM_PROCESSES 10 // number of processes
+#define NUM_PROCESSES 5 // number of processes
 #define NUM_ALGORITHMS 4 // number of algorithms implemented
 #define ALGO(a, b, c, d) {"FCFS", "PS", "RR", "SJF"} // algorithms
 // ===============================================================
