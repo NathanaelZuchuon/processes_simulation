@@ -1,28 +1,22 @@
 // Author: Nathanael Zuchuon 3GI 2024-2025
 // =======================================
 
-#include <time.h>
 #include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <GL/glu.h>
 #include <unistd.h>
 #include <stdbool.h>
 #include <windows.h>
 
-#include "../include/GL/glut.h"
-#include "../include/algorithms/fcfs.h"
+#include "../include/algorithms/headVar.h"
+
 #include "../include/algorithms/ps.h"
 #include "../include/algorithms/rr.h"
 #include "../include/algorithms/sjf.h"
-
-#define WIN_WIDTH 1200 // window's width
-#define WIN_HEIGHT 600 // window's height
+#include "../include/algorithms/fcfs.h"
 
 #define FONT GLUT_BITMAP_HELVETICA_18 // font family used
 
-#define NUM_PROCESSES 5 // number of processes
 #define NUM_ALGORITHMS 4 // number of algorithms implemented
 #define ALGO(a, b, c, d) {"FCFS", "PS", "RR", "SJF"} // algorithms
 // ===============================================================
@@ -30,11 +24,12 @@
 void start();
 void popup();
 void myInit();
+void drawAxis();
 void closeW(int W);
 void drawStartButton();
 float zuchuon(double x);
 void draw(int i_colour);
-int random(int min, int max);
+int rando(int min, int max);
 void temporisation(int value);
 void drawRectangle(char *side);
 void drawDescZone(char *desc, int i_colour);
@@ -42,19 +37,9 @@ bool onButton(int indexButton, int x, int y);
 // colour of button when clicked : fcfs->0 • ps->1 • rr->2 • sjf->3
 void drawAlgorithmButtons(int n, int i_colour);
 // ----------------------------------------------------------------
-void create(int x, int y, int w, int h, char *type);
+// void create(int x, int y, int w, int h, char *type);
 void clickMouse(int button, int state, int x, int y);
 void drawButton(const char *text, int x, int y, int i_colour);
-
-typedef struct
-{
-	int id; // [|1;5|]
-	int priority; // [|0;10|]
-	int arrival_time; // [|0;10|]
-	int burst_time; // [|1;10|]
-	float colour; // zuch(priority)
-	int remaining_time; // (-)burst_time
-} Process;
 
 typedef struct
 {
@@ -67,10 +52,9 @@ typedef struct
 Button buttons[5]; // start->0 • fcfs->1 • ps->2 • rr->3 • sjf->4
 int indexButton = 0;
 
-char *algoUsed = "";
+int algoUsed = 0; // fcfs->1 • ps->2 • rr->3 • sjf->4
 Process processes[NUM_PROCESSES];
 
-int mainFrame;
 int popupFrame;
 
 bool v = true; // Do not generate processes while `Start` is pressed many times
@@ -88,7 +72,7 @@ int main(int argc, char *argv[])
 	glutInitWindowSize(WIN_WIDTH, WIN_HEIGHT);
 	glutInitWindowPosition(100, 100);
 
-	mainFrame = glutCreateWindow("Processes Simulation");
+	glutCreateWindow("Processes Simulation");
 
 	glutDisplayFunc(start);
 	glutMouseFunc(clickMouse);
@@ -142,6 +126,41 @@ void myInit()
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
+void drawAxis()
+{
+	glutSwapBuffers();
+
+	glColor3f(1.0, 1.0, 1.0);
+	glBegin(GL_LINES);
+		// x axis
+		glVertex2f(WIN_WIDTH * 0.25, WIN_HEIGHT * 0.75);
+		glVertex2f(WIN_WIDTH * 0.75, WIN_HEIGHT * 0.75);
+	glEnd();
+
+	glBegin(GL_LINES);
+		// y axis
+		glVertex2f(WIN_WIDTH * 0.25, WIN_HEIGHT * 0.75);
+		glVertex2f(WIN_WIDTH * 0.25, WIN_HEIGHT * 0.26);
+	glEnd();
+
+	float esp = (WIN_WIDTH * 0.5) / (NUM_PROCESSES + 1);
+	float w = WIN_WIDTH * 0.25;
+	for (int i = 0; i<= (NUM_PROCESSES * 10); i+=10)
+	{
+		char texte[3];
+		sprintf(texte, "%d", i);
+
+		glRasterPos2f(w, WIN_HEIGHT * 0.79);
+		for (char* c = texte; *c != '\0'; c++)
+		{
+			glutBitmapCharacter(FONT, *c);
+		}
+		w+=esp;
+	}
+
+	glutSwapBuffers();
+}
+
 void closeW(int W)
 {
 	glutDestroyWindow(W);
@@ -170,7 +189,7 @@ void draw(int i_colour)
 	glutSwapBuffers(); // because of GLUT_DOUBLE : glFlush <=> GLUT_SINGLE
 }
 
-int random(int min, int max)
+int rando(int min, int max)
 {
 	return min + rand() % (max - min + 1);
 }
@@ -275,10 +294,10 @@ void create(int x, int y, int w, int h, char *type)
 	{
 		glBegin(GL_LINE_LOOP);
 	}
-	glVertex2f(x, y); // upper left corner
-	glVertex2f(x+w, y); // upper right corner
-	glVertex2f(x+w, y+h); // lower right corner
-	glVertex2f(x, y+h); // lower left corner
+	glVertex2f(x, y);		  // upper left corner
+	glVertex2f(x + w, y);	  // upper right corner
+	glVertex2f(x + w, y + h); // lower right corner
+	glVertex2f(x, y + h);	  // lower left corner
 	glEnd();
 }
 
@@ -286,9 +305,33 @@ void clickMouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
+		if (onButton(1, x, y))
+		{
+			drawDescZone(fcfs_desc(), 0);
+			algoUsed = 1;
+		}
+
+		if (onButton(2, x, y))
+		{
+			drawDescZone(ps_desc(), 1);
+			algoUsed = 2;
+		}
+
+		if (onButton(3, x, y))
+		{
+			drawDescZone(rr_desc(), 2);
+			algoUsed = 3;
+		}
+
+		if (onButton(4, x, y))
+		{
+			drawDescZone(sjf_desc(), 3);
+			algoUsed = 4;
+		}
+
 		if (onButton(0, x, y))
 		{
-			if (algoUsed == "")
+			if (algoUsed == 0)
 			{
 				popup();
 			}
@@ -296,13 +339,14 @@ void clickMouse(int button, int state, int x, int y)
 			{
 				if (v)
 				{
+					v = false;
+
 					srand(time(NULL));
 					for (int i = 0; i < NUM_PROCESSES; i++)
 					{
 						processes[i].id = i + 1;
-						processes[i].priority = random(RAND_MAX*0.25, RAND_MAX);
-						processes[i].arrival_time = random(1, 10);
-						processes[i].burst_time = random(1, 10);
+						processes[i].priority = rando(RAND_MAX*0.25, RAND_MAX);
+						processes[i].burst_time = rando(1, 10);
 						processes[i].remaining_time = processes[i].burst_time;
 						processes[i].colour = zuchuon((double)processes[i].priority);
 					}
@@ -331,33 +375,34 @@ void clickMouse(int button, int state, int x, int y)
 					free(s_y);
 					free(processHeight);
 					// END =====
-					v = false;
+				}
+
+				glutSwapBuffers();
+				glColor3f(0.3, 0.3, 0.3);
+				create(WIN_WIDTH * 0.25, WIN_HEIGHT * 0.25, WIN_WIDTH * 0.5, WIN_HEIGHT * 0.5, "button");
+				glutSwapBuffers();
+
+				drawAxis();
+
+				switch (algoUsed)
+				{
+					case 1:
+						fcfs(processes);
+						break;
+					case 2:
+						ps(processes);
+						break;
+					case 3:
+						rr(processes);
+						break;
+					case 4:
+						sjf(processes);
+						break;
+					default:
+						printf("Unknowed Error !");
+						break;
 				}
 			}
-		}
-
-		if (onButton(1, x, y))
-		{
-			drawDescZone(fcfs_desc(), 0);
-			algoUsed = "fcfs";
-		}
-
-		if (onButton(2, x, y))
-		{
-			drawDescZone(ps_desc(), 1);
-			algoUsed = "ps";
-		}
-
-		if (onButton(3, x, y))
-		{
-			drawDescZone(rr_desc(), 2);
-			algoUsed = "rr";
-		}
-
-		if (onButton(4, x, y))
-		{
-			drawDescZone(sjf_desc(), 3);
-			algoUsed = "sjf";
 		}
 	}
 }

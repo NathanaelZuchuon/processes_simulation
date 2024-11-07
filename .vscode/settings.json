@@ -1,13 +1,14 @@
 {
   "files.associations": {
-    "*.embeddedhtml": "html",
-    "*.html": "html",
-    "*.htm": "html",
-    "fcfs.h": "c",
-    "ps.h": "c",
-    "rr.h": "c",
-    "sjf.h": "c",
-    "random": "c"
-  },
+	"*.embeddedhtml": "html",
+	"*.html": "html",
+	"*.htm": "html",
+	"fcfs.h": "c",
+	"ps.h": "c",
+	"rr.h": "c",
+	"sjf.h": "c",
+	"random": "c",
+	"stdio.h": "c"
+},
   "C_Cpp.default.compilerPath": "C:\\MinGW\\bin\\gcc.exe"
 }

@@ -1,7 +1,9 @@
 #ifndef PS
 #define PS
 
-void ps();
+#include "../../include/algorithms/headVar.h"
+
+void ps(Process processes[]);
 char *ps_desc();
 
 #endif

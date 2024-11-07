@@ -2,6 +2,7 @@
 
 void rr()
 {
+	printf("rr");
 }
 
 char* rr_desc()

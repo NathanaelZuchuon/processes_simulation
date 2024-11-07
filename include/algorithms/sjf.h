@@ -1,7 +1,9 @@
 #ifndef SJF
 #define SJF
 
-void sjf();
+#include "../../include/algorithms/headVar.h"
+
+void sjf(Process processes[]);
 char* sjf_desc();
 
 #endif

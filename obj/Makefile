@@ -2,7 +2,7 @@
 
 CC = gcc
 CFLAGS = -m32
-LDFLAGS = -m32 -L"./lib" -lopengl32 -lglut32
+LDFLAGS = -m32 -L"../lib" -lopengl32 -lglut32
 EXEC = ../bin/zuchuon_simulator.exe
 
 all : $(EXEC)
@@ -28,6 +28,3 @@ sjf.o: ../src/algorithms/sjf.c
 
 clean:
 	del *.o
-
-mrproper: clean
-	del -f $(EXEC)

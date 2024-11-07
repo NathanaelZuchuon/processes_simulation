@@ -1,7 +1,9 @@
 #include "../../include/algorithms/sjf.h"
 
-void sjf()
+void sjf(Process processes[])
 {
+	sortProcesses(processes, 2);
+	scheduling(processes);
 }
 
 char* sjf_desc()
