@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../include/GL/glut.h"
+#include "../GL/glut.h"
 
 typedef struct
 {
@@ -26,5 +26,6 @@ void create(int x, int y, int w, int h, char *type);
 void sortProcesses(Process processes[], int attr);
 void permute(Process *p1, Process *p2);
 void scheduling(Process processes[]);
+void sub(Process *p, int q);
 
 #endif

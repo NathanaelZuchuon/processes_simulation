@@ -399,7 +399,7 @@ void clickMouse(int button, int state, int x, int y)
 						sjf(processes);
 						break;
 					default:
-						printf("Unknowed Error !");
+						printf("Unknown Error !");
 						break;
 				}
 			}

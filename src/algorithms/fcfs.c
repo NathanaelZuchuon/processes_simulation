@@ -61,7 +61,7 @@ void sortProcesses(Process processes[], int attr)
 					break;
 
 				default:
-					printf("Unknowed Error !!");
+					printf("Unknown Error !!");
 					break;
 			}
 		}
@@ -93,5 +93,10 @@ void scheduling(Process processes[])
 		x += w;
 		y -= h;
 	}
+}
+
+void sub(Process *p, int q)
+{
+	p->remaining_time = p->remaining_time - q;
 }
 // ===
