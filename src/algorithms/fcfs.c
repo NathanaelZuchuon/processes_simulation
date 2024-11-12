@@ -22,7 +22,7 @@ void tempo(int value, float x, float y, int w, float h)
 		glBegin(GL_QUADS);
 		glVertex2f(x, y);			   // lower left corner
 		glVertex2f(x + value, y);	   // lower right corner
-		glVertex2f(x + value, y - h); // upper right corner
+		glVertex2f(x + value, y - h);  // upper right corner
 		glVertex2f(x, y - h);		   // upper left corner
 		glEnd();
 
@@ -77,10 +77,15 @@ void permute(Process *p1, Process *p2)
 
 void scheduling(Process processes[])
 {
+	float esp = WIN_HEIGHT * 0.01;
+
 	float h = (WIN_HEIGHT * 0.48) / NUM_PROCESSES;
+	float p_h = ((WIN_HEIGHT / 2) - ((NUM_PROCESSES + 1) * esp)) / NUM_PROCESSES;
 
 	float x = WIN_WIDTH * 0.25;
+
 	float y = WIN_HEIGHT * 0.74;
+	float p_y = WIN_HEIGHT * 0.25;
 
 	float w = 0.0;
 	for (int i = 0; i < NUM_PROCESSES; i++)
@@ -90,13 +95,33 @@ void scheduling(Process processes[])
 		glColor3f(processes[i].colour, 0.2, 0.2);
 		tempo(0, x, y, w, h);
 
+		p_y += esp;
+		printp(processes[i], WIN_WIDTH * 0.77, p_y, p_h);
+		p_y += p_h;
+
 		x += w;
 		y -= h;
 	}
 }
 
-void sub(Process *p, int q)
+void printp(Process p, int x, int y, float h)
 {
-	p->remaining_time = p->remaining_time - q;
+	float value = p.burst_time * WIN_WIDTH * 0.021;
+
+	glutSwapBuffers();
+
+	glBegin(GL_QUADS);
+	glVertex2f(x, y);			  // upper left corner
+	glVertex2f(x + value, y);	  // upper right corner
+	glVertex2f(x + value, y + h); // lower right corner
+	glVertex2f(x, y + h);		  // lower left corner
+	glEnd();
+
+	glutSwapBuffers();
+}
+
+void sub(int *t, int q)
+{
+	*t = *t - q;
 }
 // ===

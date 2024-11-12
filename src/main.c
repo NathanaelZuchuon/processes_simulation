@@ -379,7 +379,9 @@ void clickMouse(int button, int state, int x, int y)
 
 				glutSwapBuffers();
 				glColor3f(0.3, 0.3, 0.3);
+
 				create(WIN_WIDTH * 0.25, WIN_HEIGHT * 0.25, WIN_WIDTH * 0.5, WIN_HEIGHT * 0.5, "button");
+				create(WIN_WIDTH * 0.77, WIN_HEIGHT * 0.26, WIN_WIDTH * 0.21, WIN_HEIGHT * 0.48, "button");
 				glutSwapBuffers();
 
 				drawAxis();

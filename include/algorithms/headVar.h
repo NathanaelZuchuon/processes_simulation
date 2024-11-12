@@ -24,8 +24,9 @@ typedef struct
 void tempo(int value, float x, float y, int w, float h);
 void create(int x, int y, int w, int h, char *type);
 void sortProcesses(Process processes[], int attr);
+void printp(Process p, int x, int y, float h);
 void permute(Process *p1, Process *p2);
 void scheduling(Process processes[]);
-void sub(Process *p, int q);
+void sub(int *t, int q);
 
 #endif
