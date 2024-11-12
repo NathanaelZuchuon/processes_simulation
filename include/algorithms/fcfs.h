@@ -1,7 +1,9 @@
 #ifndef FCFS
 #define FCFS
 
-void fcfs();
+#include "../../include/algorithms/headVar.h"
+
+void fcfs(Process processes[]);
 char* fcfs_desc();
 
 #endif

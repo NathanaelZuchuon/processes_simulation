@@ -1,7 +1,9 @@
 #include "../../include/algorithms/ps.h"
 
-void ps()
+void ps(Process processes[])
 {
+	sortProcesses(processes, 1);
+	scheduling(processes);
 }
 
 char* ps_desc()
