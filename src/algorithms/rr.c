@@ -43,8 +43,8 @@ void rr(Process processes[])
 
 			if (temp[i] == 0)
 			{
-				x += w;
-				y -= h;
+				/*x += w;
+				y -= h;*/
 
 				continue;
 
